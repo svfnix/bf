@@ -1,0 +1,10 @@
+/node_modules
+/public/storage
+/storage/*.key
+/vendor
+/.idea
+/storage/*
+!/storage/sessions/.gitkeep
+Homestead.json
+Homestead.yaml
+.env
