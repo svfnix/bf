@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Console\Commands;
+use InvalidArgumentException;
 use Symfony\Component\DomCrawler\Crawler;
 
 class buy extends Commands
@@ -13,22 +14,31 @@ class buy extends Commands
     public function handle()
     {
         $this->loadUserClient($this->argument('user'));
+
+        // Load link
         $this->fetch($this->argument('link'));
         $this->assert($this->argument('user'), 'check user logged in');
 
-        $crawler = new Crawler();
-        $crawler->addContent($this->getResult());
-        $url = $crawler->filter('.sku-detail .details-wrapper .details-footer .js-add_cart_tracking')->first()->attr('data-js-uri');
-        $sku = $crawler->filter('.sku-detail .details-wrapper .details-footer .js-add_cart_tracking')->first()->attr('data-sku');
+        // Add to shopping cart
+        $url = null; $count = 0;
+        while(empty($url)) {
+            $crawler = new Crawler();
+            $crawler->addContent($this->getResult());
+            try {
+                $url = $crawler->filter('.sku-detail .details-wrapper .details-footer .js-add_cart_tracking')->first()->attr('data-js-uri');
+            } catch (InvalidArgumentException $e){
+                echo "(" . $count++ . ") Out of stock. waiting ...\n";
+                sleep(1);
+                $this->fetch($this->argument('link'));
+            }
+        }
 
         $this->fetch($url, [
             'YII_CSRF_TOKEN' => $this->getCsrfToken()
         ], $this->argument('link'), 1);
         $this->assert('success', 'adding to cart');
 
-        $this->fetch('http://www.bamilo.com/ajax/cart/getpagedata/action/overlay/');
-        $this->fetch('http://www.bamilo.com/cart/');
-
+        // Set address
         $this->fetch('http://www.bamilo.com/onepagecheckout/address/index/');
 
         $crawler = new Crawler();
@@ -45,21 +55,23 @@ class buy extends Commands
         ], 'http://www.bamilo.com/onepagecheckout/address/index/');
         $this->assert('جزئیات تحویل سفارش', 'address choosed');
 
+        // Set shipping type
         $this->fetch('http://www.bamilo.com/onepagecheckout/shipping/save/', [
             'YII_CSRF_TOKEN' => $this->getCsrfToken(),
             'ShippingMethodForm[shipping_method]' => "UniversalShippingMatrix"
         ], 'http://www.bamilo.com/onepagecheckout/address/index/');
-        $this->assert('مامور پست', 'delivery type choosed');
+        $this->assert('پرداخت در محل', 'delivery type choosed');
 
-        $this->fetch('http://www.bamilo.com/onepagecheckout/shipping/save/', [
+        // Set payment type
+        /*$this->fetch('http://www.bamilo.com/onepagecheckout/payment/save/', [
             'YII_CSRF_TOKEN' => $this->getCsrfToken(),
             'PaymentOptionsForm[payment_option]' => "1",
             'couponcode' => ""
-        ], 'http://www.bamilo.com/onepagecheckout/address/index/');
-        die($this->getResult());
+        ], 'http://www.bamilo.com/onepagecheckout/shipping/save/');*/
 
-        $this->assert('shippingAddress', 'delivery type choosed');
-        die('order successfully sent');
+        // Log order
+        file_put_contents('index.html', $this->getResult());
+        $this->assert('از خرید شما متشکریم', 'order successfully sent');
 
     }
 }
