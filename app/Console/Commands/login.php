@@ -24,7 +24,7 @@ class login extends Commands
         ], 'http://www.bamilo.com/customer/account/login/');
 
         file_put_contents('login.html', $this->getResult());
-        $this->except('لطفاً وارد حساب کاربری خود شوید', 'login to account');
+        $this->assert('سلام', 'login to account');
         $this->error_die('Successfully Logged in :x  (uid: '.$this->userid.')');
     }
 }
