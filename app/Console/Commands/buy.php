@@ -70,7 +70,7 @@ class buy extends Commands
         ], 'http://www.bamilo.com/onepagecheckout/shipping/save/');*/
 
         // Log order
-        file_put_contents('index.html', $this->getResult());
+        file_put_contents('buy.html', $this->getResult());
         $this->assert('از خرید شما متشکریم', 'order successfully sent');
 
     }

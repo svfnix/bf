@@ -23,7 +23,8 @@ class login extends Commands
             'LoginForm[remember]' => "1"
         ], 'http://www.bamilo.com/customer/account/login/');
 
-        $this->assert('مدیریت حساب کاربری', 'login to account');
+        file_put_contents('login.html', $this->getResult());
+        $this->assert('headerInfo.customer.label', 'login to account');
         $this->error_die('Successfully Logged in :x  (uid: '.$this->userid.')');
     }
 }
