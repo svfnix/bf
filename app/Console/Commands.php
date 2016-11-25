@@ -22,16 +22,16 @@ class Commands extends Command
         die("{$message}\n");
     }
 
-    public function assert($needed, $message){
-        if(!strpos($this->getResult(), $needed)){
+    public function assert($tag, $message){
+        if(!strpos($this->getResult(), $tag)){
             $this->error_die("Failed: $message");
         } else {
             echo "Success: {$message}\n";
         }
     }
 
-    public function except($needed, $message){
-        if(strpos($this->getResult(), $needed)){
+    public function except($tag, $message){
+        if(strpos($this->getResult(), $tag)){
             $this->error_die("Failed: $message");
         } else {
             echo "Success: {$message}\n";
