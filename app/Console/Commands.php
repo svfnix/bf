@@ -30,6 +30,14 @@ class Commands extends Command
         }
     }
 
+    public function except($needed, $message){
+        if(strpos($this->getResult(), $needed)){
+            $this->error_die("Failed: $message");
+        } else {
+            echo "Success: {$message}\n";
+        }
+    }
+
     public function loadUserClient($uname){
 
         $this->client = new Client();
