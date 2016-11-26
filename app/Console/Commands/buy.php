@@ -8,16 +8,18 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class buy extends Commands
 {
-    protected $signature = 'bml:buy {user} {link}';
+    protected $signature = 'bml:buy {link}';
     protected $description = 'Buy a product';
 
     public function handle()
     {
-        $this->loadUserClient($this->argument('user'));
+        $uname = 'masoudvf@mizbanan.com';
+
+        $this->loadUserClient($uname);
 
         // Load link
         $this->fetch($this->argument('link'));
-        $this->assert($this->argument('user'), 'check user logged in');
+        $this->assert($uname, 'check user logged in');
 
         // Add to shopping cart
         $url = null; $count = 0;
@@ -63,11 +65,11 @@ class buy extends Commands
         $this->assert('پرداخت در محل', 'delivery type choosed');
 
         // Set payment type
-        /*$this->fetch('http://www.bamilo.com/onepagecheckout/payment/save/', [
+        $this->fetch('http://www.bamilo.com/onepagecheckout/payment/save/', [
             'YII_CSRF_TOKEN' => $this->getCsrfToken(),
             'PaymentOptionsForm[payment_option]' => "1",
             'couponcode' => ""
-        ], 'http://www.bamilo.com/onepagecheckout/shipping/save/');*/
+        ], 'http://www.bamilo.com/onepagecheckout/shipping/save/');
 
         // Log order
         file_put_contents('buy.html', $this->getResult());

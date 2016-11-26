@@ -67,11 +67,11 @@ class buyps extends Commands
         $this->assert('پرداخت در محل', 'delivery type choosed');
 
         // Set payment type
-        /*$this->fetch('http://www.bamilo.com/onepagecheckout/payment/save/', [
+        $this->fetch('http://www.bamilo.com/onepagecheckout/payment/save/', [
             'YII_CSRF_TOKEN' => $this->getCsrfToken(),
             'PaymentOptionsForm[payment_option]' => "1",
             'couponcode' => ""
-        ], 'http://www.bamilo.com/onepagecheckout/shipping/save/');*/
+        ], 'http://www.bamilo.com/onepagecheckout/shipping/save/');
 
         // Log order
         file_put_contents('buyps.html', $this->getResult());
